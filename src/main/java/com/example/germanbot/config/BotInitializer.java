@@ -1,7 +1,7 @@
 package com.example.germanbot.config;
 
 import com.example.germanbot.service.TelegramBot;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -10,9 +10,13 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 @Component
+@Slf4j
 public class BotInitializer {
-    @Autowired
-    TelegramBot telegramBot;
+    final TelegramBot telegramBot;
+
+    public BotInitializer(TelegramBot telegramBot) {
+        this.telegramBot = telegramBot;
+    }
 
     @EventListener({ContextRefreshedEvent.class})
     public void init() throws TelegramApiException {
@@ -20,7 +24,7 @@ public class BotInitializer {
         try {
             telegramBotsApi.registerBot(telegramBot);
         } catch (TelegramApiException e) {
-
+            log.error("Error: " + e.getMessage());
         }
     }
 }
