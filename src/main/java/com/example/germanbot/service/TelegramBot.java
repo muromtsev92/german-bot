@@ -4,9 +4,15 @@ import com.example.germanbot.config.BotConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
+import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Component
@@ -17,6 +23,14 @@ public class TelegramBot extends TelegramLongPollingBot {
     public TelegramBot(BotConfig config) {
         super(config.getToken());
         this.config = config;
+        List<BotCommand> commandList = new ArrayList<>();
+        commandList.add(new BotCommand("/start", "start"));
+        commandList.add(new BotCommand("/showdata", "shows data"));
+        try{
+            this.execute(new SetMyCommands(commandList, new BotCommandScopeDefault(), null));
+        } catch (TelegramApiException e){
+            log.error("Error during creating command list: " + e.getMessage());
+        }
     }
 
     @Override
@@ -30,6 +44,10 @@ public class TelegramBot extends TelegramLongPollingBot {
                     startCommandReceive(chatId, update.getMessage().getChat().getFirstName());
                     break;
 
+                case "/showdata":
+                    startCommandReceiveShowData(chatId, update.getMessage().getChat().getFirstName());
+                    break;
+
                 default:
                     sendMessage(chatId, "no such command");
             }
@@ -40,6 +58,10 @@ public class TelegramBot extends TelegramLongPollingBot {
         String answer = "Hi, " + name + "!";
         log.info("replied to user " + name);
         sendMessage(chatId, answer);
+    }
+
+    private void startCommandReceiveShowData(long chatId, String name){
+        sendMessage(chatId, "im showing data for " + name  + "!");
     }
 
     private void sendMessage(long chatId, String text) {
