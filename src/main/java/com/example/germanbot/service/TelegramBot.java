@@ -18,7 +18,8 @@ import java.util.List;
 @Component
 @Slf4j
 public class TelegramBot extends TelegramLongPollingBot {
-    final BotConfig config;
+    private final BotConfig config;
+
 
     public TelegramBot(BotConfig config) {
         super(config.getToken());
@@ -80,4 +81,5 @@ public class TelegramBot extends TelegramLongPollingBot {
     public String getBotUsername() {
         return config.getBotName();
     }
+
 }
