@@ -1,6 +1,7 @@
 package com.example.germanbot.service;
 
 import com.example.germanbot.config.BotConfig;
+import com.example.germanbot.model.Word;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -26,7 +27,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         this.config = config;
         List<BotCommand> commandList = new ArrayList<>();
         commandList.add(new BotCommand("/start", "start"));
-        commandList.add(new BotCommand("/showdata", "shows data"));
+        commandList.add(new BotCommand("/game", "guess a word"));
         try{
             this.execute(new SetMyCommands(commandList, new BotCommandScopeDefault(), null));
         } catch (TelegramApiException e){
@@ -45,8 +46,8 @@ public class TelegramBot extends TelegramLongPollingBot {
                     startCommandReceive(chatId, update.getMessage().getChat().getFirstName());
                     break;
 
-                case "/showdata":
-                    startCommandReceiveShowData(chatId, update.getMessage().getChat().getFirstName());
+                case "/game":
+
                     break;
 
                 default:
@@ -61,8 +62,10 @@ public class TelegramBot extends TelegramLongPollingBot {
         sendMessage(chatId, answer);
     }
 
-    private void startCommandReceiveShowData(long chatId, String name){
-        sendMessage(chatId, "im showing data for " + name  + "!");
+    private void startCommandReceiveGame(long chatId){
+        Word word = new Word();
+        sendMessage(chatId, "Переведи на немецкий: " + word.getRus());
+
     }
 
     private void sendMessage(long chatId, String text) {
